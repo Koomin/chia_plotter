@@ -9,8 +9,8 @@ try:
         config_data = json.load(config)
         chia_directory = config_data['chia_directory']
         k_size = config_data['k_size']
-        temp_path = config_data['temp_path']
-        directory_path = config_data['directory_path']
+        temp_path = config_data['temp_directory']
+        directory_path = config_data['final_directory']
         plotting_address = config_data['plotting_address']
         threads = int(config_data["threads"])
         logging.info('Config loaded correctly.')
@@ -22,6 +22,7 @@ except ValueError:
     sys.exit()
 except KeyError:
     logging.error(f'You didn\'t provide all config data.')
+    sys.exit()
 command = f'chia plots create -k {k_size} -t {temp_path} -d {directory_path} -c {plotting_address}'
 
 
