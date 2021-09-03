@@ -1,10 +1,46 @@
-import os
 import subprocess
+import json
+import logging
+import sys
+import threading
 
-chia_directory = '/home/keysys/chia-blockchain/'
+try:
+    with open('config.json') as config:
+        config_data = json.load(config)
+        chia_directory = config_data.get('chia_directory')
+        k_size = config_data.get('k_size')
+        temp_path = config_data.get('temp_path')
+        directory_path = config_data.get('directory_path')
+        plotting_address = config_data.get('plotting_address')
+        threads = config_data.get("threads")
+        logging.info('Config loaded correctly.')
+except IOError as e:
+    logging.error(f'Cannot find config file.')
+    sys.exit()
+command = f'chia plots create -k {k_size} -t {temp_path} -d {directory_path} -c {plotting_address}'
 
-# chia_directory = os.getcwd()
-venv = chia_directory + 'venv/bin/python chia plotnft show'
-# os.chdir(chia_directory)
-subprocess.check_call('chia plotnft show'.split(), cwd=chia_directory)
-# subprocess.check_call('chia plotnft show'.split(), cwd=chia_directory)
+
+class PlottingThread(threading.Thread):
+    def __init__(self, threadID):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+
+    def run(self):
+        logging.info(f'Starting {self.threadID} plotter.')
+        run_plotting(command)
+        logging.info(f'Exit {self.threadID} plotter.')
+
+
+def run_plotting(cmd):
+    try:
+        subprocess.check_call(cmd.split(), cwd=chia_directory)
+    except IOError:
+        logging.error('Chia directory wrong provided.')
+        sys.exit()
+
+
+while True:
+    for idx in range(0, threads):
+        PlottingThread(idx).start()
+    while threading.activeCount() > 0:
+        logging.info(f'{threading.activeCount()} plotters run.')
