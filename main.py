@@ -12,7 +12,7 @@ try:
         temp_path = config_data.get('temp_path')
         directory_path = config_data.get('directory_path')
         plotting_address = config_data.get('plotting_address')
-        threads = config_data.get("threads")
+        threads = int(config_data.get("threads"))
         logging.info('Config loaded correctly.')
 except IOError as e:
     logging.error(f'Cannot find config file.')
