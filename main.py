@@ -17,6 +17,8 @@ try:
 except IOError as e:
     logging.error(f'Cannot find config file.')
     sys.exit()
+except ValueError:
+    logging.error(f'Wrong number of threads provided.')
 command = f'chia plots create -k {k_size} -t {temp_path} -d {directory_path} -c {plotting_address}'
 
 
