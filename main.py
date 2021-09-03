@@ -20,6 +20,8 @@ except IOError as e:
 except ValueError:
     logging.error(f'Wrong number of threads provided.')
     sys.exit()
+except KeyError:
+    logging.error(f'You didn\'t provide all config data.')
 command = f'chia plots create -k {k_size} -t {temp_path} -d {directory_path} -c {plotting_address}'
 
 
