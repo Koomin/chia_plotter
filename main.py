@@ -19,6 +19,7 @@ except IOError as e:
     sys.exit()
 except ValueError:
     logging.error(f'Wrong number of threads provided.')
+    sys.exit()
 command = f'chia plots create -k {k_size} -t {temp_path} -d {directory_path} -c {plotting_address}'
 
 
