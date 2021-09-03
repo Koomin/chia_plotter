@@ -3,6 +3,15 @@ import json
 import logging
 import sys
 import threading
+import shutil
+
+CHIA_FILE_SIZES = {
+    "25": 0.6,
+    "32": 101.4,
+    "33": 208.8,
+    "34": 429.8,
+    "35": 884.1
+}
 
 try:
     with open('config.json') as config:
@@ -45,8 +54,23 @@ def run_plotting(cmd):
         sys.exit()
 
 
-while True:
+def check_disk_space(path):
+    total, used, free = shutil.disk_usage(path)
+    free = free // (2 ** 30)
+    return free
+
+
+def enough_free_space(number_of_threads, k, path):
+    free_space = check_disk_space(path)
+    if number_of_threads * CHIA_FILE_SIZES[k] < free_space:
+        return True
+    return False
+
+
+while enough_free_space(threads, k_size, directory_path):
     for idx in range(0, threads):
         PlottingThread(idx).start()
     while threading.activeCount() > 0:
         logging.info(f'{threading.activeCount()} plotters run.')
+
+logging.warning('Not enough disk space.')
