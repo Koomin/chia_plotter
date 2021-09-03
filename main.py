@@ -7,12 +7,12 @@ import threading
 try:
     with open('config.json') as config:
         config_data = json.load(config)
-        chia_directory = config_data.get('chia_directory')
-        k_size = config_data.get('k_size')
-        temp_path = config_data.get('temp_path')
-        directory_path = config_data.get('directory_path')
-        plotting_address = config_data.get('plotting_address')
-        threads = int(config_data.get("threads"))
+        chia_directory = config_data['chia_directory']
+        k_size = config_data['k_size']
+        temp_path = config_data['temp_path']
+        directory_path = config_data['directory_path']
+        plotting_address = config_data['plotting_address']
+        threads = int(config_data["threads"])
         logging.info('Config loaded correctly.')
 except IOError as e:
     logging.error(f'Cannot find config file.')
