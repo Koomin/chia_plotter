@@ -1,7 +1,8 @@
 {
   "chia_directory": "",
   "temp_directory": "",
-  "final_directory": "",
+  "list_of_final_directories": [
+  ],
   "plotting_address": "",
   "k_size": "",
   "threads": ""
