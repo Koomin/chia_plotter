@@ -91,7 +91,17 @@ def enough_free_space(k, directories):
 
 
 if __name__ == "__main__":
+    threads_list = []
+    go_on = False
     while True:
         check_disk_space(final_directories)
         for thread in range(threads):
-            PlottingThread(thread, k_size, final_directories).start()
+            running_thread = PlottingThread(thread, k_size, final_directories).start()
+            threads_list.append(running_thread)
+        while not go_on:
+            status_list = [t.is_alive() for t in threads_list]
+            if True not in status_list:
+                go_on = True
+
+
+
