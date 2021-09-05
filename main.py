@@ -45,14 +45,16 @@ except KeyError:
 
 
 class PlottingThread(threading.Thread):
-    def __init__(self, threadID):
+    def __init__(self, threadID, k, directories):
         threading.Thread.__init__(self)
         self.threadID = threadID
+        self.k = k
+        self.directories = directories
 
     def run(self):
         logging.info(f'Starting {self.threadID} plotter.')
         start = time.time()
-        run_plotting(k_size, final_directories)
+        run_plotting(self.k, self.directories)
         end = time.time()
         execution_time = timedelta(seconds=end - start)
         logging.info(f'Exit {self.threadID} plotter - execution time {execution_time}..')
@@ -92,4 +94,4 @@ if __name__ == "__main__":
     while True:
         check_disk_space(final_directories)
         for thread in range(threads):
-            run_plotting(k_size, final_directories)
+            PlottingThread(thread, k_size, final_directories).start()
