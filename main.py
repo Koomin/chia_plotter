@@ -4,8 +4,6 @@ import logging
 import sys
 import shutil
 import threading
-import uuid
-import concurrent.futures
 import time
 from datetime import timedelta
 
@@ -62,12 +60,13 @@ class PlottingThread(threading.Thread):
 
 def run_plotting(k, directories):
     directory_path = enough_free_space(k, directories)
-    cmd = f'chia plots create -k {k} -t {temp_path} -d {directory_path} -c {plotting_address}'
-    try:
-        subprocess.check_call(cmd.split(), cwd=chia_directory)
-    except IOError:
-        logging.error('Chia directory wrong provided.')
-        sys.exit()
+    if directory_path:
+        cmd = f'chia plots create -k {k} -t {temp_path} -d {directory_path} -c {plotting_address}'
+        try:
+            subprocess.check_call(cmd.split(), cwd=chia_directory)
+        except IOError:
+            logging.error('Chia directory wrong provided.')
+            sys.exit()
 
 
 def check_disk_space(directories_list):
@@ -87,7 +86,7 @@ def enough_free_space(k, directories):
             DISKS_FREE_SPACE[path] = DISKS_FREE_SPACE[path] - PLOT_SIZE[k]
             return path
     logging.error('Not enough disk space - interrupting.')
-    sys.exit()
+    return False
 
 
 if __name__ == "__main__":
