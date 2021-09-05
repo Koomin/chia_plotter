@@ -3,6 +3,7 @@ import json
 import logging
 import sys
 import shutil
+import threading
 import uuid
 import concurrent.futures
 import time
@@ -43,10 +44,21 @@ except KeyError:
     sys.exit()
 
 
+class PlottingThread(threading.Thread):
+    def __init__(self, threadID):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+
+    def run(self):
+        logging.info(f'Starting {self.threadID} plotter.')
+        start = time.time()
+        run_plotting(k_size, final_directories)
+        end = time.time()
+        execution_time = timedelta(seconds=end - start)
+        logging.info(f'Exit {self.threadID} plotter - execution time {execution_time}..')
+
+
 def run_plotting(k, directories):
-    thread_id = uuid.uuid4()
-    start = time.time()
-    logging.info(f'Starting plotter with ID {thread_id}.')
     directory_path = enough_free_space(k, directories)
     cmd = f'chia plots create -k {k} -t {temp_path} -d {directory_path} -c {plotting_address}'
     try:
@@ -54,9 +66,6 @@ def run_plotting(k, directories):
     except IOError:
         logging.error('Chia directory wrong provided.')
         sys.exit()
-    end = time.time()
-    execution_time = timedelta(seconds=end - start)
-    logging.info(f'Exit plotter with ID {thread_id} - execution time {execution_time}.')
 
 
 def check_disk_space(directories_list):
@@ -82,5 +91,5 @@ def enough_free_space(k, directories):
 if __name__ == "__main__":
     while True:
         check_disk_space(final_directories)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-            executor.map(run_plotting(k_size, final_directories), range(threads))
+        for thread in range(threads):
+            run_plotting(k_size, final_directories)
