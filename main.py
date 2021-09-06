@@ -75,7 +75,7 @@ def check_disk_space(directories_list):
             total, used, free = shutil.disk_usage(directory)
             free = free // (2 ** 30)
             DISKS_FREE_SPACE[directory] = free
-            logging.info(DISKS_FREE_SPACE[directory])
+            logging.info(f'Free space {directory} : {DISKS_FREE_SPACE[directory]}')
         except FileNotFoundError:
             logging.error(f'Cannot find directory : {directory}')
             continue
